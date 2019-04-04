@@ -33,8 +33,42 @@ const server = http.createServer(async (req, res) => {
                 res.status = 404;
                 res.end('Resource not found');
             }
+        } else if (method === 'PUT') {
+            if (parts.length === 3) {
+                const toDoId = parts[2];
+                let body = '';
+                
+                req.on('data', (chunk) => {
+                    body += chunk.toString();
+                });
+                
+                req.on('end', async () => {
+                    const parsedBody = querystring.parse(body);
+                    await toDo.update(toDoId, parsedBody);
+                    res.end(`{ "id": ${orderId}}`);
+                });
+            } else if (method === "POST") {
+                // let's read those chunks!
+                let body = '';
+                req.on('data', (chunk) => {
+                    // .toString() is built into most objects
+                    // it returns a string representation of the object
+                    body += chunk.toString();
+                });
+    
+                req.on('end', async () => {
+                    const parsedBody = querystring.parse(body);
+                    console.log('====================');
+                    console.log(parsedBody);
+                    console.log('^^^^^^ BODY OF FORM ^^^^^^^^');
+                    const newToDoId = await toDo.add(parsedBody);
+                    res.end(`{ "id": ${newToDoId}}`);
+                });
+            } else {
+                res.status = 404;
+                res.end('Resource not found');
+            }
         }
-    // }
 });
 
 server.listen(port, hostname, () => {

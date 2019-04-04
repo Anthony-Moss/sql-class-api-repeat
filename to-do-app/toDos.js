@@ -32,6 +32,17 @@ class toDo {
             });
         });
     };
+
+    static update(id, orderData) {
+        return db.result(`
+            update orders
+            set first_name = $1, last_name = $2, email = $3, coffee_order = $4
+            where id=$5
+        `, [orderData.first_name, orderData.last_name, orderData.email, orderData.coffee_order, id]);
+            // .then((data) => {
+            //     return data.id;
+            // });
+    }
 }
 
 module.exports = toDo;
